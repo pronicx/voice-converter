@@ -126,10 +126,3 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ---
 
 *Note: Voice Converter requires an active ElevenLabs API key for voice conversion.*
-```
-
-The main changes include:
-1. Added clear installation options including PyPI, GitHub, and source installation
-2. Added instructions to run the app via the console script after installation
-3. Reorganized the installation section for clarity
-4. Updated the "Starting the Application" section to reflect both package and module usage
