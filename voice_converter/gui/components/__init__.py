@@ -1,0 +1,1 @@
+"""Individual GUI components used in the main interface.""" 

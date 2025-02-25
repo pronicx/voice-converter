@@ -14,10 +14,10 @@ Voice Converter is a desktop application that transforms your voice into various
 
 ## Screenshots
 
-![Voice Converter Screenshot](img/main_screen.png)
+![Voice Converter Screenshot](img/main_screen.png)  
 *Main view of the Voice Converter application*
 
-![Settings Screen](img/settings_screen.png)
+![Settings Screen](img/settings_screen.png)  
 *Settings view with audio device configuration*
 
 ## Installation

@@ -1,44 +1,40 @@
 from elevenlabs import ElevenLabs
-import config
+from voice_converter import config
 
 class ElevenLabsClient:
     def __init__(self, settings_manager=None):
         self.settings_manager = settings_manager
-        self.voices = {}
+        self.api_key = ""
         
-        # API-Key aus Settings oder Config verwenden
-        self.api_key = None
-        if settings_manager and settings_manager.get("api_key"):
-            self.api_key = settings_manager.get("api_key")
-        else:
-            self.api_key = config.API_KEY
+        if settings_manager:
+            saved_api_key = settings_manager.get("api_key")
+            if saved_api_key:
+                self.api_key = saved_api_key
         
-        # Elevenlabs client initialisieren mit dem API-Key
-        self.client = ElevenLabs(api_key=self.api_key)
-        self.languages = {}
+        # Initialize the client
+        self.client = ElevenLabs(api_key=self.api_key) if self.api_key else None
+        self.available_voices = []
         
-    def get_voices(self):
-        """Fetch available voices from ElevenLabs API"""
+        # Try to get voices if API key is available
+        if self.api_key:
+            self.fetch_available_voices()
+    
+    def fetch_available_voices(self):
+        """Fetch available voices from the ElevenLabs API"""
         try:
-            voices_data = self.client.voices.get_all()
-            self.voices = {voice.name: voice.voice_id for voice in voices_data.voices}
-            
-            # Also group voices by language
-            self.languages = {}
-            for voice in voices_data.voices:
-                for language in voice.labels.get('language', []):
-                    if language not in self.languages:
-                        self.languages[language] = []
-                    self.languages[language].append((voice.name, voice.voice_id))
-            
-            return self.voices, self.languages
+            if not self.client:
+                if not self.api_key:
+                    print("No API key available")
+                    return []
+                self.client = ElevenLabs(api_key=self.api_key)
+                
+            print("Fetching available voices...")
+            voices = self.client.voices.getAll()
+            self.available_voices = [(voice.name, voice.voice_id) for voice in voices]
+            return self.available_voices
         except Exception as e:
             print(f"Error fetching voices: {e}")
-            return {}, {}
-    
-    def get_voice(self, voice_name):
-        """Get voice ID by name"""
-        return self.voices.get(voice_name)
+            return []
     
     def convert_speech(self, audio_data, voice_id=None, language_code=None):
         """Convert speech using the ElevenLabs API"""
