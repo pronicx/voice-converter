@@ -51,6 +51,5 @@ venv.bak/
 # Project specific
 user_settings.json
 screenshots/
-img/
 *.mp3
 *.wav 
