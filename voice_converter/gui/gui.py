@@ -14,6 +14,9 @@ class VoiceConverterGUI:
         self.api_client = api_client
         self.voice_converter = voice_converter
         
+        # Status-Callback registrieren
+        self.voice_converter.set_status_callback(self.show_api_error)
+        
         # Configure the root window
         self.root.title("Voice Converter")
         self.root.geometry("600x500")
@@ -56,10 +59,79 @@ class VoiceConverterGUI:
             self.status_bar,
             self.toggle_recording_callback
         )
-
-        # ... rest of the implementation ...
-        # Add remaining methods here
-
+        
+        self.settings_tab_component = SettingsTabComponent(
+            self.settings_tab,
+            self.audio_manager,
+            self.voice_converter,
+            self.status_bar
+        )
+        
+        # Fetch voices on startup in a separate thread
+        threading.Thread(target=self.load_voices, daemon=True).start()
+        
+    def load_voices(self):
+        """Load voices in a background thread"""
+        # Check if API key is available
+        api_key = self.api_client.settings_manager.get("api_key")
+        if not api_key:
+            self.status_bar.set_status("No API key found. Please enter your API key in the Settings tab.")
+            # Auto-switch to settings tab
+            self.tab_control.select(self.settings_tab)
+            return
+        
+        self.status_bar.set_status("Loading voices...")
+        voices, languages = self.api_client.get_voices()
+        
+        if voices:
+            # Update UI on main thread
+            self.root.after(0, lambda: self.update_voices_ui(voices, languages))
+        else:
+            self.status_bar.set_status("Error loading voices. Check your API key.")
+    
+    def update_voices_ui(self, voices, languages):
+        """Update UI with voice data"""
+        if isinstance(voices, dict):
+            # If voices is a dictionary (name -> id)
+            self.main_tab_component.update_voices(voices)
+            
+            # Set the voice from saved settings
+            saved_voice_id = self.voice_converter.voice_id
+            if saved_voice_id:
+                # Find voice name for the saved ID
+                for voice_name, voice_id in voices.items():
+                    if voice_id == saved_voice_id:
+                        # Set the combobox to this voice
+                        self.main_tab_component.voice_combobox.set(voice_name)
+                        break
+        else:
+            # If voices is not in the expected format, log an error
+            print(f"Warning: Unexpected voices format: {type(voices)}")
+        
+        self.voices_loaded = True
+        self.status_bar.set_status("Voices loaded successfully")
+    
     def toggle_recording_callback(self):
-        # Implementation
-        pass 
+        """Toggle recording state"""
+        if self.is_recording:
+            # Stop recording
+            self.voice_converter.stop_recording()
+            self.main_tab_component.set_recording_state(False)
+            self.status_bar.set_status("Recording stopped")
+        else:
+            # Start recording
+            self.voice_converter.start_recording()
+            self.main_tab_component.set_recording_state(True)
+            self.status_bar.set_status("Recording in progress...")
+        
+        self.is_recording = not self.is_recording 
+
+    def show_api_error(self, message):
+        """Shows API error messages in a dialog or in the status bar"""
+        self.status_bar.set_status(message)
+        
+        # For important errors like quota exceeded, also show a dialog
+        if "Quota exceeded" in message:
+            import tkinter.messagebox as messagebox
+            messagebox.showwarning("API Quota Exceeded", 
+                f"{message}\n\nPlease wait until your quota is reset, or upgrade your plan at ElevenLabs.") 
