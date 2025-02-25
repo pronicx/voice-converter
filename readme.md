@@ -26,12 +26,26 @@ Voice Converter is a desktop application that transforms your voice into various
 
 - Python 3.7 or higher
 - FFmpeg (must be available in the system path)
-- The following Python packages:
 
+### Installation Options
+
+#### Option 1: Install from GitHub
 ```bash
-pip install elevenlabs pyaudio numpy
+pip install git+https://github.com/pronicx/voice-converter.git
 ```
 
+#### Option 2: Install from source
+```bash
+# Clone the repository
+git clone https://github.com/pronicx/voice-converter.git
+cd voice-converter
+
+# Install the package
+pip install .
+
+# Or install in development mode
+pip install -e .
+```
 
 ### Installing Dependencies
 
@@ -40,7 +54,6 @@ pip install elevenlabs pyaudio numpy
 pip install pipwin
 pipwin install pyaudio
 ```
-
 
 FFmpeg Installation:
 ```bash
@@ -51,13 +64,11 @@ winget install ffmpeg
 # https://ffmpeg.org/download.html
 ```
 
-
 #### macOS
 ```bash
 brew install portaudio ffmpeg
 pip install pyaudio
 ```
-
 
 #### Linux (Ubuntu/Debian)
 ```bash
@@ -65,27 +76,26 @@ sudo apt-get install python3-dev portaudio19-dev ffmpeg
 pip install pyaudio
 ```
 
-
 ### Starting the Application
 
-1. Clone the repository or download the files
-2. Navigate to the project directory
-3. Start the application:
+Once installed, you can start the application:
 
 ```bash
-python main.py
-```
+# If installed as a package
+voice-converter
 
+# Or run directly from the source directory
+python -m voice_converter.main
+```
 
 ## Usage
 
 1. **Configure API Key**: Enter your ElevenLabs API key in the Settings tab
-2. **Start Application**: Run `main.py`
-3. **Select Voice**: Choose one of the available voices from the dropdown menu
-4. **Select Language**: Choose your preferred language
-5. **Adjust Audio Settings**: In the Settings tab, you can select microphone and speaker
-6. **Start Recording**: Click "Start Recording" and speak into the microphone
-7. **Listen**: Your voice will be converted and played through the selected output device
+2. **Select Voice**: Choose one of the available voices from the dropdown menu
+3. **Select Language**: Choose your preferred language
+4. **Adjust Audio Settings**: In the Settings tab, you can select microphone and speaker
+5. **Start Recording**: Click "Start Recording" and speak into the microphone
+6. **Listen**: Your voice will be converted and played through the selected output device
 
 ## Configuration
 
@@ -117,3 +127,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 *Note: Voice Converter requires an active ElevenLabs API key for voice conversion.*
 ```
+
+The main changes include:
+1. Added clear installation options including PyPI, GitHub, and source installation
+2. Added instructions to run the app via the console script after installation
+3. Reorganized the installation section for clarity
+4. Updated the "Starting the Application" section to reflect both package and module usage
